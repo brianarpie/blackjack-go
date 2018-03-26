@@ -4,6 +4,8 @@ package deck
 import (
 	"fmt"
 	"sort"
+	"math/rand"
+	"time"
 )
 
 type Suit uint8
@@ -79,6 +81,29 @@ func Sort(less func(cards []Card) func(i, j int) bool) func([]Card) []Card {
 func Less(cards []Card) func(i, j int) bool {
 	return func(i, j int) bool {
 		return absRank(cards[i]) < absRank(cards[j])
+	}
+}
+
+// expose for testing
+var shuffleRand = rand.New(rand.NewSource(time.Now().Unix()))
+
+func Shuffle(cards []Card) []Card {
+	ret := make([]Card, len(cards))
+	// r := rand.New(rand.NewSource(time.Now().Unix()))
+	perm := shuffleRand.Perm(len(cards))
+	for idx, j := range perm {
+		ret[idx] = cards[j]
+	}
+	return ret
+}
+
+func Deck(n int) func([]Card) []Card {
+	return func(cards []Card) []Card {
+		var ret []Card
+		for i := 0; i < n; i++ {
+			ret = append(ret, cards...)
+		}
+		return ret
 	}
 }
 
